@@ -149,12 +149,16 @@ sudo ln -s /etc/nginx/sites-available/splashsite /etc/nginx/sites-enabled/
 
 ### Execute
 
-Execute the script to run by using this command-  
-`nohup sudo -E ruby hook.rb -o 0.0.0.0 -p 1234 >>/home/nihal/hooklog.txt &`  
+Execute the script to run by using this command in sudo mode- 
+```
+sudo -E su
+nohup ruby hook.rb -o 0.0.0.0 -p 1234 >>/home/nihal/hooklog.txt &
+```
+
 The 1234 should be the same as the port set in the GitHub webhook.  
 The sudo -E preserves the Environment Variables of the user allowing you to access HOOK_TOKEN and other set token keys.
 
-Commenting with "Let's preview this" or the changed `TRIGGER_COMMAND` should now serve the Pull Request at the preview website.
+Voila! Commenting with "Let's preview this" or the changed `TRIGGER_COMMAND` should now serve the Pull Request at the preview website.
 
 ### Author
 
