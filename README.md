@@ -1,12 +1,12 @@
 # SitePreviewHook
 A web hook for generating and serving site previews from Pull Requests.
 
-### Objective:
+## Objective:
 To trigger a build for every PR to a static jekyll site and deploy it to a preview website. Each Pull Request can be built separately and made available on the website. The result should appear so-
 
 ![PullRequestComments](/PR.png)
 
-### Built using:
+## Built using:
 
 - Ruby
 - Gems: octokit, sinatra
@@ -14,7 +14,7 @@ To trigger a build for every PR to a static jekyll site and deploy it to a previ
 - GitHub webhooks and API
 - nginx
 
-### How does it work?
+## How does it work?
 
 The repository for the website is cloned and kept. Whenever the master branch on GitHub is updated or pushed to, the cloned repository is made to fetch all the new changes. Here is how it happens-
 
@@ -32,9 +32,9 @@ To Preview a Pull Request, a comment with the right phrase needs to be made. Her
 7. The built site is then copied over to the respective directory for deployment, something like `/var/www/splashsite/pull/<PR#>/`.
 8. The shell script in turn calls another ruby script to deliver a comment to the Pull Request in GitHub, saying that the build is complete and the preview is available, with the right link.
 
-### Usage:
+## Usage:
 
-#### Download
+### Download
 
 Download these files and move them to a folder-
 1. [hook.rb](/hook.rb)- The main ruby script that runs in the background and listens for POST requests.
@@ -44,7 +44,7 @@ Download these files and move them to a folder-
 
 Clone the GitHub repository for the static site in the same folder.
 
-#### GitHub Setup
+### GitHub Setup
 Create a GitHub webhook for the static site repository.
 
 - Set Payload URL to "http://preview.terasology.net:1234/payload"
@@ -52,7 +52,7 @@ Create a GitHub webhook for the static site repository.
 - Select relevant individual events ("push" and "issue_comment" here)
 - Leave Active as check marked
 
-#### Create GitHub User-Bot
+### Create GitHub User-Bot
 Github doesn't have bots. Fortunately, we can create a user account and make it function as a bot.
 
 1. Create a new user account, in our case it is `gooey-splashsite`.
@@ -61,7 +61,7 @@ Github doesn't have bots. Fortunately, we can create a user account and make it 
 4. Copy the token and note it down (to be used in [comment_pull_request.sh](/comment_pull_request.sh) script). Note that you should not use the token directly in the token and it is best to use it as an environment variable.
 
 
-#### Customize
+### Customize
 Change the parameters in the `hook.rb` file as per your need:
 
 The path to the cloned directory.  
@@ -90,7 +90,7 @@ Preview URL without terminating PR number.
 
 Note: All directory paths should necessarily NOT have a "/" at the end.
 
-#### Configure nginx
+### Configure nginx
 
 Read more about setting up nginx server blocks [here](https://www.digitalocean.com/community/tutorials/how-to-set-up-nginx-server-blocks-virtual-hosts-on-ubuntu-16-04).
 
@@ -140,7 +140,7 @@ sudo ln -s /etc/nginx/sites-available/splashsite /etc/nginx/sites-enabled/
 ```
 
 
-#### Execute
+### Execute
 
 Execute the script to run by using this command-
 `nohup sudo ruby hook.rb -o 0.0.0.0 -p 1234 >>/home/nihal/hooklog.txt &`
@@ -148,6 +148,6 @@ The 1234 should be the same as the port set in the GitHub webhook.
 
 Commenting with "Let's preview this" or the changed `TRIGGER_COMMAND` should now serve the Pull Request at the preview website.
 
-#### Author
+### Author
 
 This script is written by [Nihal Singh](http://github.com/nihal111/).
