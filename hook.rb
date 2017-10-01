@@ -15,7 +15,7 @@ set :bind, '0.0.0.0'
 
 def push(json_body)
   puts "Push Event \n Updating the repository\n"
-  system("sudo ./update_repo.sh #{REPO_LINK} #{REPO_DIR}")
+  system("sudo -E ./update_repo.sh #{REPO_LINK} #{REPO_DIR}")
 end
 
 def issue_comment(json_body)
@@ -56,17 +56,31 @@ def issue_comment(json_body)
   if comment_body.include? TRIGGER_COMMAND
     puts "\nComment has trigger command. Sending for preview"
 
-    system("sudo ./pull_request_preview.sh #{REPO_LINK} #{REPO_DIR} #{id} #{ROOT_DIR} #{DEPLOY_PATH} #{SUB_PATH} #{REPO_NAME} #{PREVIEW_URL} &")
+    system("sudo -E ./pull_request_preview.sh #{REPO_LINK} #{REPO_DIR} #{id} #{ROOT_DIR} #{DEPLOY_PATH} #{SUB_PATH} #{REPO_NAME} #{PREVIEW_URL} &")
   end
 end
 
+def verify_signature(payload_body)
+  signature = 'sha1=' + OpenSSL::HMAC.hexdigest(OpenSSL::Digest.new('sha1'), ENV['HOOK_TOKEN'], payload_body)
+  if request.env['HTTP_X_HUB_SIGNATURE']
+    return halt 500, "Signatures didn't match!" unless Rack::Utils.secure_compare(signature, request.env['HTTP_X_HUB_SIGNATURE'])
+  else
+    return halt 500, "No Signature sent"
+  end
+end
+
+
 post '/payload' do
+  
+  request.body.rewind
+  payload_body = request.body.read
+  verify_signature(payload_body)
   
   github_event = request.env["HTTP_X_GITHUB_EVENT"]
   puts "\nGithub Event- #{github_event} \n" 
 
   # Extract JSON from request and parse it
-  json_body = JSON.parse(request.body.read)
+  json_body = JSON.parse(payload_body)
   
   if (github_event == "push")
     puts push(json_body)  
