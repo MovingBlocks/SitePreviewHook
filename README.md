@@ -49,6 +49,10 @@ Create a GitHub webhook for the static site repository.
 
 - Set Payload URL to "http://preview.terasology.net:1234/payload"
 - Set Content type to application/json
+- Set Secret to a random 20 character string.
+	> ruby -rsecurerandom -e 'puts SecureRandom.hex(20)
+- Set the same random string as an environment variable on the server.
+`export HOOK_TOKEN=your_token`
 - Select relevant individual events ("push" and "issue_comment" here)
 - Leave Active as check marked
 
@@ -58,7 +62,8 @@ Github doesn't have bots. Fortunately, we can create a user account and make it 
 1. Create a new user account, in our case it is `gooey-splashsite`.
 2. Go to Settings from the top right drop down menu and select Personal Access Token down at the bottom of the list.
 3. Create a new access token with the relevant right (just `public_repo` here).
-4. Copy the token and note it down (to be used in [comment_pull_request.sh](/comment_pull_request.sh) script). Note that you should not use the token directly in the token and it is best to use it as an environment variable.
+4. Copy the token and note it down (to be used in [comment_pull_request.sh](/comment_pull_request.sh) script). Note that you should not use the token directly in the token and it is best to use it as an environment variable. To create an environment variable do something like:
+`export GOOEY_SPLASHSITE_TOKEN=your_token`
 
 
 ### Customize
@@ -143,8 +148,9 @@ sudo ln -s /etc/nginx/sites-available/splashsite /etc/nginx/sites-enabled/
 ### Execute
 
 Execute the script to run by using this command-
-`nohup sudo ruby hook.rb -o 0.0.0.0 -p 1234 >>/home/nihal/hooklog.txt &`
+`nohup sudo -E ruby hook.rb -o 0.0.0.0 -p 1234 >>/home/nihal/hooklog.txt &`
 The 1234 should be the same as the port set in the GitHub webhook.
+The sudo -E preserves the Environment Variables of the user allowing you to access HOOK_TOKEN and other set token keys.
 
 Commenting with "Let's preview this" or the changed `TRIGGER_COMMAND` should now serve the Pull Request at the preview website.
 
