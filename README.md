@@ -65,6 +65,8 @@ Github doesn't have bots. Fortunately, we can create a user account and make it 
 4. Copy the token and note it down (to be used in [comment_pull_request.sh](/comment_pull_request.sh) script). Note that you should not use the token directly in the token and it is best to use it as an environment variable. To create an environment variable do something like:
 `export GOOEY_SPLASHSITE_TOKEN=your_token`
 
+Read more about securing your webhook [here](https://developer.github.com/webhooks/securing/).
+
 
 ### Customize
 Change the parameters in the `hook.rb` file as per your need:
@@ -147,9 +149,9 @@ sudo ln -s /etc/nginx/sites-available/splashsite /etc/nginx/sites-enabled/
 
 ### Execute
 
-Execute the script to run by using this command-
-`nohup sudo -E ruby hook.rb -o 0.0.0.0 -p 1234 >>/home/nihal/hooklog.txt &`
-The 1234 should be the same as the port set in the GitHub webhook.
+Execute the script to run by using this command-  
+`nohup sudo -E ruby hook.rb -o 0.0.0.0 -p 1234 >>/home/nihal/hooklog.txt &`  
+The 1234 should be the same as the port set in the GitHub webhook.  
 The sudo -E preserves the Environment Variables of the user allowing you to access HOOK_TOKEN and other set token keys.
 
 Commenting with "Let's preview this" or the changed `TRIGGER_COMMAND` should now serve the Pull Request at the preview website.
